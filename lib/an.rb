@@ -46,6 +46,9 @@ class AN
       "#{m}#{y[-2..-1]}"
     end
 
+    # Because the expected parameters are significantly different
+    # than what we have for free from `ValueObject`, it's much
+    # simpler to just write our own `to_hash` here.
     def to_hash
       { "x_card_num" => card_num, "x_card_code" => card_code,
         "x_exp_date" => exp_date }
