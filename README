@@ -1,0 +1,44 @@
+AN
+
+    A simplified Authorize.NET client. Use it if you care about:
+
+    1. The runtime of the libraries you require.
+    2. Simplicity
+
+FEATURES
+
+    - AIM Integration
+
+USAGE
+
+    $ gem install an
+
+    AN.login_id = ENV["LOGIN_ID"]
+    AN.transaction_key = ENV["TRANS_KEY"]
+
+    gateway = AN::AIM.test
+
+    customer = AN::Customer.new(first_name: "John",
+                                last_name: "Doe",
+                                zip: "98004",
+                                email: "me@cyrildavid.com")
+
+    invoice = AN::Invoice.new(invoice_num: SecureRandom.hex(20),
+                              amount: "19.99",
+                              description: "Sample Transaction")
+
+    card = AN::CreditCard.new(card_num: "4111111111111111",
+                              card_code: "123",
+                              exp_month: "1", exp_year: "2015")
+
+    begin
+      gateway.sale(customer, invoice, card)
+    rescue AN::TransactionFailed => e
+      puts "%s: %s" % [e.reason_code, e.reason_text]
+    end
+
+
+TODOS
+
+    ARB Integration
+    CIM Integration
