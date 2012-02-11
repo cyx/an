@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<createCustomerProfileRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+  <merchantAuthentication>
+    <name>{{ login }}</name>
+    <transactionKey>{{ tran_key }}</transactionKey>
+  </merchantAuthentication>
+  <refId>{{ ref_id }}</refId>
+  <profile>
+    <merchantCustomerId>{{ customer_id }}</merchantCustomerId>
+    <description>{{ description }}</description>
+    <email>{{ email }}</email>
+  </profile>
+</createCustomerProfileRequest>

@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<createCustomerProfileTransactionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+  <merchantAuthentication>
+    <name>{{ login }}</name>
+    <transactionKey>{{ tran_key }}</transactionKey>
+  </merchantAuthentication>
+  <transaction>
+    <profileTransAuthCapture>
+      <amount>{{ amount }}</amount>
+
+      % if tax = params[:tax]
+        <tax>
+          <amount>{{ tax[:amount] }</amount>
+          <name>{{ tax[:name] }}</name>
+          <description>{{ tax[:description] }}</description>
+        </tax>
+      % end
+
+      % if shipping = params[:shipping]
+        <shipping>
+          <amount>{{ shipping[:amount] }}</amount>
+          <name>{{ shipping[:name] }}</name>
+          <description>{{ shipping[:description] }}</description>
+        </shipping>
+      % end
+
+      % if line_items = params[:line_itmes]
+        % line_items.each do |item|
+          <lineItems>
+            <itemId>{{ item.id }}</itemId>
+            <name>{{ item.name }}</name>
+            <description>{{ item.description }}</description>
+            <quantity>{{ item.quantity }}</quantity>
+            <unitPrice>{{ item.unit_price }}</unitPrice>
+            <taxable>{{ item.taxable }}</taxable>
+          </lineItems>
+        % end
+      % end
+      <customerProfileId>{{ profile_id }}</customerProfileId>
+      <customerPaymentProfileId>{{ payment_profile_id }}</customerPaymentProfileId>
+
+      % if shipping_id = params[:shipping_address_id]
+        <customerShippingAddressId>{{ shipping_id }}</customerShippingAddressId>
+      % end
+
+      <order>
+        <invoiceNumber>{{ invoice_num }}</invoiceNumber>
+        <description>{{ description }}</description>
+        <purchaseOrderNumber>{{ purchase_order_number }}</purchaseOrderNumber>
+      </order>
+
+      <taxExempt>{{ tax_exempt }}</taxExempt>
+      <recurringBilling>{{ recurring_billing }}</recurringBilling>
+
+      % if card_code = params[:card_code]
+        <cardCode>{{ card_code }}</cardCode>
+      % end
+    </profileTransAuthCapture>
+  </transaction>
+</createCustomerProfileTransactionRequest>
