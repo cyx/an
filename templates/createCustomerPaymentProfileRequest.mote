@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<createCustomerPaymentProfileRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+  <merchantAuthentication>
+    <name>{{ login }}</name>
+    <transactionKey>{{ transaction_key }}</transactionKey>
+  </merchantAuthentication>
+  <customerProfileId>{{ profile_id }}</customerProfileId>
+  <paymentProfile>
+    <billTo>
+      <firstName>{{ first_name }}</firstName>
+      <lastName>{{ last_name }}</lastName>
+  
+      % [:company, :address, :city, :state, :zip, :country].each do |field|
+        % if params[field]
+          <{{ field }}>{{ params[field] }}</{{ field }}>
+        % end
+      % end
+
+      % if params[:phone]
+        <phoneNumber>{{ phone }}</phoneNumber>
+      % end
+
+      % if params[:fax]
+        <faxNumber>{{ fax }}</faxNumber>
+      % end
+    </billTo>
+
+    <payment>
+      <creditCard>
+        <cardNumber>{{ card_number }}</cardNumber>
+        <expirationDate>{{ expiration_date }}</expirationDate>
+
+        % if params[:card_code]
+          <cardCode>{{ params[:card_code] }}</cardCode>
+        % end
+
+      </creditCard>
+    </payment>
+  </paymentProfile>
+
+  <validationMode>{{ params[:validation_mode] || "liveMode" }}</validationMode>
+</createCustomerPaymentProfileRequest>

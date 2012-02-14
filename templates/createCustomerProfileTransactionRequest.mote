@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
-<createCustomerProfileTransactionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+<createCustomerProfileTransactionRequest 
+  xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+
   <merchantAuthentication>
     <name>{{ login }}</name>
-    <transactionKey>{{ tran_key }}</transactionKey>
+    <transactionKey>{{ transaction_key }}</transactionKey>
   </merchantAuthentication>
   <transaction>
     <profileTransAuthCapture>
@@ -27,12 +29,12 @@
       % if line_items = params[:line_itmes]
         % line_items.each do |item|
           <lineItems>
-            <itemId>{{ item.id }}</itemId>
-            <name>{{ item.name }}</name>
-            <description>{{ item.description }}</description>
-            <quantity>{{ item.quantity }}</quantity>
-            <unitPrice>{{ item.unit_price }}</unitPrice>
-            <taxable>{{ item.taxable }}</taxable>
+            <itemId>{{ item[:id] }}</itemId>
+            <name>{{ item[:name] }}</name>
+            <description>{{ item[:description] }}</description>
+            <quantity>{{ item[:quantity] }}</quantity>
+            <unitPrice>{{ item[:unit_price] }}</unitPrice>
+            <taxable>{{ item[:taxable] }}</taxable>
           </lineItems>
         % end
       % end
@@ -44,13 +46,13 @@
       % end
 
       <order>
-        <invoiceNumber>{{ invoice_num }}</invoiceNumber>
+        <invoiceNumber>{{ invoice_number }}</invoiceNumber>
         <description>{{ description }}</description>
         <purchaseOrderNumber>{{ purchase_order_number }}</purchaseOrderNumber>
       </order>
 
-      <taxExempt>{{ tax_exempt }}</taxExempt>
-      <recurringBilling>{{ recurring_billing }}</recurringBilling>
+      <taxExempt>{{ params[:tax_exempt] || "true" }}</taxExempt>
+      <recurringBilling>{{ params[:recurring_billing] || "false" }}</recurringBilling>
 
       % if card_code = params[:card_code]
         <cardCode>{{ card_code }}</cardCode>

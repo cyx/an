@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<createTransactionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+  <merchantAuthentication>
+    <name>{{ login }}</name>
+    <transactionKey>{{ transaction_key }}</transactionKey>
+  </merchantAuthentication>
+  <transactionRequest>
+    <transactionType>authCaptureTransaction</transactionType>
+    <amount>{{ amount }}</amount>
+    <payment>
+      <creditCard>
+        <cardNumber>{{ card_number }}</cardNumber>
+        <expirationDate>{{ expiration_date }}</expirationDate>
+        
+        % if params[:card_code]
+          <cardCode>{{ card_code }}</cardCode>
+        % end
+      </creditCard>
+    </payment>
+    <order>
+      <invoiceNumber>{{ invoice_number }}</invoiceNumber>
+      <description>{{ description }}</description>
+    </order>
+    <billTo>
+      <firstName>{{ first_name }}</firstName>
+      <lastName>{{ last_name }}</lastName>
+      <company>{{ params[:company] }}</company>
+      <address>{{ params[:address] }}</address>
+      <city>{{ params[:city] }}</city>
+      <state>{{ params[:state] }}</state>
+      <zip>{{ params[:zip] }}</zip>
+      <country>{{ params[:country] }}</country>
+      <phoneNumber>{{ params[:phone_number] }}</phoneNumber>
+      <faxNumber>{{ params[:fax_number] }}</faxNumber>
+    </billTo>
+    % if params[:customer_ip]
+      <customerIP>{{ params[:customer_ip] }}</customerIP>
+    % end
+  </transactionRequest>
+</createTransactionRequest>
