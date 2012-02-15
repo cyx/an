@@ -9,14 +9,14 @@ class AN
   #
   # AUTHORIZE_NET_URL=https://login:key@api.authorize.net/xml/v1/request.api
   #
-  # in the appropriate location (e.g. /etc/profile.d, ~/.bashrc, or 
+  # in the appropriate location (e.g. /etc/profile.d, ~/.bashrc, or
   # whatever you're most comfortable with.
   #
   # The TEST URL is https://apikey.authorize.net/xml/v1/request.api
   def self.connect(url = ENV["AUTHORIZE_NET_URL"])
     new(URI(url))
   end
-  
+
   TEMPLATES = File.expand_path("../templates", File.dirname(__FILE__))
 
   include Mote::Helpers
@@ -24,7 +24,7 @@ class AN
   attr :url
   attr :auth
   attr :client
- 
+
   def initialize(uri)
     @auth   = { login: uri.user, transaction_key: uri.password }
     @client = Client.new(uri)
@@ -41,16 +41,16 @@ class AN
   def create_payment_profile(params)
     call("createCustomerPaymentProfileRequest", params)
   end
-  
+
   def create_profile_transaction(params)
     call("createCustomerProfileTransactionRequest", params)
   end
 
-private 
+private
   def call(api_call, params)
     Response.new(post(payload(api_call, params)))
   end
-  
+
   def post(xml)
     client.post(xml, "Content-Type" => "text/xml")
   end
@@ -58,71 +58,81 @@ private
   def payload(api_call, params)
     mote(File.join(TEMPLATES, "%s.mote" % api_call), params.merge(auth))
   end
-  
+
   class Response
-    attr :data
-  
     OK = "Ok"
 
     def initialize(xml)
-      @data = XmlSimple.xml_in(xml, forcearray: false)      
+      @data = XmlSimple.xml_in(xml, forcearray: false)
+    end
+
+    def [](key)
+      @data[key]
     end
 
     def success?
-      data["messages"]["resultCode"] == OK
+      @data["messages"]["resultCode"] == OK
     end
 
-    def transaction_id
-      data["transactionResponse"]["transId"]      
-    end
-
-    def reference_id
-      data["refId"]
+    def to_hash
+      @data
     end
 
     def profile_id
-      data["customerProfileId"]      
+      @data["customerProfileId"]
     end
 
     def payment_profile_id
-      data["customerPaymentProfileId"]
+      @data["customerPaymentProfileId"]
     end
 
-    def validation_response
-      if resp = data["validationDirectResponse"] || data["directResponse"]
-        ValidationResponse.new(resp)
-      end
+    def authorization
+      response = @data["validationDirectResponse"] || @data["directResponse"]
+
+      AuthorizationResponse.new(response) if response
     end
   end
 
-  class ValidationResponse
-    RESPONSE_FIELDS = %w[code subcode reason_code reason_text
-                         authorization_code avs_response trans_id
-                         invoice_number description amount method
-                         transaction_type customer_id first_name
-                         last_name company address city state zip
-                         country phone fax email
-                         shipping_first_name shipping_last_name
-                         shipping_company shipping_address shipping_city
-                         shipping_state shipping_zip shipping_country
-                         tax duty freight tax_exempt purchase_order_number
-                         md5_hash card_code_response cavv_response
-                         _41 _42 _43 _44 _45 _46 _47 _48 _49 _50
-                         account_number card_type split_tender_id
-                         requested_amount balance_on_card].freeze
-
-    attr :fields
+  class AuthorizationResponse
+    FIELDS = {
+      1  => "responseCode",
+      3  => "messageCode",
+      4  => "messageDescription",
+      5  => "authCode",
+      6  => "avsResultCode",
+      7  => "transId",
+      38 => "transHash",
+      39 => "cvvResultCode",
+      40 => "cavvResultCode",
+      51 => "accountNumber",
+      52 => "accountType"
+    }
 
     def initialize(data, delimiter = ",")
-      @fields = Hash[RESPONSE_FIELDS.zip(data.split(delimiter))]
+      @list = data.split(delimiter)
+      @data = {}
+
+      FIELDS.each do |index, field|
+        # The FIELDS hash is using a 1-based index in order
+        # to match the ordering number in the AIM documentation.
+        @data[field] = @list[index - 1]
+      end
+    end
+
+    def to_hash
+      @data
+    end
+
+    def [](key)
+      @data[key]
     end
 
     def success?
-      fields["code"] == "1" && fields["reason_code"] == "1"
+      @data["responseCode"] == "1" && @data["messageCode"] == "1"
     end
 
     def transaction_id
-      fields["trans_id"]
+      @data["transId"]
     end
   end
 

@@ -13,32 +13,25 @@ USAGE
 
     $ gem install an
 
-    AN.login_id = ENV["LOGIN_ID"]
-    AN.transaction_key = ENV["TRANS_KEY"]
+    $ export AUTHORIZE_NET_URL=https://<login>:<key>@<url>
 
-    gateway = AN::AIM.test
+    gateway = AN.connect
 
-    customer = AN::Customer.new(first_name: "John",
-                                last_name: "Doe",
-                                zip: "98004",
-                                email: "me@cyrildavid.com")
+    response = gateway.transact(
+      card_number: "4111111111111111",
+      card_code: "123",
+      expiration_date: "2015-01",
+      amount: "10.00",
+      invoice_number: SecureRandom.hex(10)
+    )
 
-    invoice = AN::Invoice.new(invoice_num: SecureRandom.hex(20),
-                              amount: "19.99",
-                              description: "Sample Transaction")
-
-    card = AN::CreditCard.new(card_num: "4111111111111111",
-                              card_code: "123",
-                              exp_month: "1", exp_year: "2015")
-
-    begin
-      gateway.sale(customer, invoice, card)
-    rescue AN::TransactionFailed => e
-      puts "%s: %s" % [e.reason_code, e.reason_text]
+    if resp.success?
+      # process the order, possibly storing
+      # parts of resp.to_hash
+    else
+      # display an error.
     end
-
 
 TODOS
 
     ARB Integration
-    CIM Integration

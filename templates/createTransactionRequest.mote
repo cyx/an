@@ -11,7 +11,7 @@
       <creditCard>
         <cardNumber>{{ card_number }}</cardNumber>
         <expirationDate>{{ expiration_date }}</expirationDate>
-        
+
         % if params[:card_code]
           <cardCode>{{ card_code }}</cardCode>
         % end
@@ -19,20 +19,26 @@
     </payment>
     <order>
       <invoiceNumber>{{ invoice_number }}</invoiceNumber>
-      <description>{{ description }}</description>
+
+      % if params[:description]
+        <description>{{ params[:description] }}</description>
+      % end
     </order>
-    <billTo>
-      <firstName>{{ first_name }}</firstName>
-      <lastName>{{ last_name }}</lastName>
-      <company>{{ params[:company] }}</company>
-      <address>{{ params[:address] }}</address>
-      <city>{{ params[:city] }}</city>
-      <state>{{ params[:state] }}</state>
-      <zip>{{ params[:zip] }}</zip>
-      <country>{{ params[:country] }}</country>
-      <phoneNumber>{{ params[:phone_number] }}</phoneNumber>
-      <faxNumber>{{ params[:fax_number] }}</faxNumber>
-    </billTo>
+    % if params[:first_name] && params[:last_name]
+      <billTo>
+        <firstName>{{ params[:first_name] }}</firstName>
+        <lastName>{{ params[:last_name] }}</lastName>
+        <company>{{ params[:company] }}</company>
+        <address>{{ params[:address] }}</address>
+        <city>{{ params[:city] }}</city>
+        <state>{{ params[:state] }}</state>
+        <zip>{{ params[:zip] }}</zip>
+        <country>{{ params[:country] }}</country>
+        <phoneNumber>{{ params[:phone_number] }}</phoneNumber>
+        <faxNumber>{{ params[:fax_number] }}</faxNumber>
+      </billTo>
+    % end
+
     % if params[:customer_ip]
       <customerIP>{{ params[:customer_ip] }}</customerIP>
     % end

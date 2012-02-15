@@ -4,22 +4,39 @@ setup do
   AN.connect
 end
 
-test "AIM basic transaction" do |gateway|
-  resp = gateway.transact({
-    :card_number => "4111111111111111",
-    :card_code => "123",
-    :expiration_date => "2015-01",
-    :amount => "10.00",
-    :invoice_number => SecureRandom.hex(10),
-    :description => "Aeutsahoesuhtaeu",
-    :first_name => "John",
-    :last_name => "Doe",
-    :address => "12345 foobar street",
-    :zip => "90210"
-  })
+test "AIM most basic transaction" do |gateway|
+  resp = gateway.transact(
+    card_number: "4111111111111111",
+    card_code: "123",
+    expiration_date: "2015-01",
+    amount: "10.00",
+    invoice_number: SecureRandom.hex(10)
+  )
 
   assert resp.success?
-  assert resp.transaction_id
+  assert resp["transactionResponse"].kind_of?(Hash)
+  assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
+  assert_equal "Visa", resp["transactionResponse"]["accountType"]
+end
+
+test "AIM transaction with billing info" do |gateway|
+  resp = gateway.transact(
+    card_number: "4111111111111111",
+    card_code: "123",
+    expiration_date: "2015-01",
+    amount: "10.00",
+    invoice_number: SecureRandom.hex(10),
+    description: "Aeutsahoesuhtaeu",
+    first_name: "John",
+    last_name: "Doe",
+    address: "12345 foobar street",
+    zip: "90210"
+  )
+
+  assert resp.success?
+  assert resp["transactionResponse"].kind_of?(Hash)
+  assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
+  assert_equal "Visa", resp["transactionResponse"]["accountType"]
 end
 
 # CIM (Customer Information Manager)
@@ -33,9 +50,9 @@ scope do
     resp = gateway.create_profile(reference_id: reference_id,
                                   customer_id: customer_id,
                                   email: "foo@bar.com")
-    
+
     assert resp.success?
-    assert_equal reference_id, resp.reference_id
+    assert_equal reference_id, resp["refId"]
     assert resp.profile_id
 
     # After a successful response in the background process, you
@@ -64,13 +81,13 @@ scope do
     # By default the validation method used is liveMode which returns an
     # AIM-like payment response string related to the credit card details
     # passed as part of creating the payment profile.
-    assert resp.success?  
+    assert resp.success?
     assert resp.payment_profile_id
-    assert resp.validation_response.success?
-    
-    assert_equal "XXXX1111", resp.validation_response.fields["account_number"]
-    assert_equal "Visa", resp.validation_response.fields["card_type"]
-  
+    assert resp.authorization.success?
+
+    assert_equal "XXXX1111", resp.authorization["accountNumber"]
+    assert_equal "Visa", resp.authorization["accountType"]
+
     # The payment profile id should then be saved together with the user.
     # You may also do a one-to-many setup similar to amazon where they can
     # add multiple credit cards. If that's the case, simply use the
@@ -89,10 +106,10 @@ scope do
       description: "Jan - Feb",
       purchase_order_number: "001"
     })
-    
+
     assert resp.success?
-    assert resp.validation_response.success?
-    assert_equal "XXXX1111", resp.validation_response.fields["account_number"]
-    assert_equal "Visa", resp.validation_response.fields["card_type"]
+    assert resp.authorization.success?
+    assert_equal "XXXX1111", resp.authorization["accountNumber"]
+    assert_equal "Visa", resp.authorization["accountType"]
   end
 end
