@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "an"
-  s.version           = "0.0.1.rc3"
+  s.version           = "0.0.1.rc4"
   s.summary           = "A thin Authorize.NET client."
   s.description       = "AN is a simplified client for integration with Authorize.NET."
   s.authors           = ["Cyril David"]
@@ -12,7 +12,8 @@ Gem::Specification.new do |s|
     "README",
     "lib/**/*.rb",
     "*.gemspec",
-    "test/*.*"
+    "test/*.*",
+    "templates/*.mote"
   ]
 
   s.add_dependency "mote"
