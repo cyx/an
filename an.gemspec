@@ -15,6 +15,5 @@ Gem::Specification.new do |s|
     "test/*.*"
   ]
 
-  s.add_dependency "scrivener"
   s.add_development_dependency "cutest"
 end
