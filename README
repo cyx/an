@@ -32,6 +32,24 @@ USAGE
       # display an error.
     end
 
+RUNNING TESTS
+
+    If you haven't signed up for an Authorize.NET developer
+    account yet, please do at http://developer.authorize.net
+
+    After signing up, you should get your login id and
+    transaction key. You can then set the environment variable
+
+    AUTHORIZE_NET_URL=https://login:key@apitest.authorize.net/xml/v1/request.api
+
+    To install the development dependencies, you have to install dep.
+
+    $ gem install dep
+    $ cd ~/path/to/an
+    $ dep install
+
+    That's it!
+
 TODOS
 
     ARB Integration
