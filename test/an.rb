@@ -1,42 +1,50 @@
 require_relative "helper"
 
-setup do
-  AN.connect
+test "luhn check" do
+  assert AN::Luhn.check("4111111111111111")
+  assert ! AN::Luhn.check("4111111111111112")
 end
 
-test "AIM most basic transaction" do |gateway|
-  resp = gateway.transact(
-    card_number: "4111111111111111",
-    card_code: "123",
-    expiration_date: "2015-01",
-    amount: "10.00",
-    invoice_number: SecureRandom.hex(10)
-  )
+# AIM (Advanced Integration Method)
+scope do
+  setup do
+    AN.connect
+  end
 
-  assert resp.success?
-  assert resp["transactionResponse"].kind_of?(Hash)
-  assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
-  assert_equal "Visa", resp["transactionResponse"]["accountType"]
-end
+  test "AIM most basic transaction" do |gateway|
+    resp = gateway.transact(
+      card_number: "4111111111111111",
+      card_code: "123",
+      expiration_date: "2015-01",
+      amount: "10.00",
+      invoice_number: SecureRandom.hex(10)
+    )
 
-test "AIM transaction with billing info" do |gateway|
-  resp = gateway.transact(
-    card_number: "4111111111111111",
-    card_code: "123",
-    expiration_date: "2015-01",
-    amount: "10.00",
-    invoice_number: SecureRandom.hex(10),
-    description: "Aeutsahoesuhtaeu",
-    first_name: "John",
-    last_name: "Doe",
-    address: "12345 foobar street",
-    zip: "90210"
-  )
+    assert resp.success?
+    assert resp["transactionResponse"].kind_of?(Hash)
+    assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
+    assert_equal "Visa", resp["transactionResponse"]["accountType"]
+  end
 
-  assert resp.success?
-  assert resp["transactionResponse"].kind_of?(Hash)
-  assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
-  assert_equal "Visa", resp["transactionResponse"]["accountType"]
+  test "AIM transaction with billing info" do |gateway|
+    resp = gateway.transact(
+      card_number: "4111111111111111",
+      card_code: "123",
+      expiration_date: "2015-01",
+      amount: "10.00",
+      invoice_number: SecureRandom.hex(10),
+      description: "Aeutsahoesuhtaeu",
+      first_name: "John",
+      last_name: "Doe",
+      address: "12345 foobar street",
+      zip: "90210"
+    )
+
+    assert resp.success?
+    assert resp["transactionResponse"].kind_of?(Hash)
+    assert_equal "XXXX1111", resp["transactionResponse"]["accountNumber"]
+    assert_equal "Visa", resp["transactionResponse"]["accountType"]
+  end
 end
 
 # CIM (Customer Information Manager)
