@@ -12,7 +12,7 @@
 
       % if tax = params[:tax]
         <tax>
-          <amount>{{ tax[:amount] }</amount>
+          <amount>{{ tax[:amount] }}</amount>
           <name>{{ tax[:name] }}</name>
           <description>{{ tax[:description] }}</description>
         </tax>
