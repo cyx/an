@@ -119,5 +119,15 @@ scope do
     assert resp.authorization.success?
     assert_equal "XXXX1111", resp.authorization["accountNumber"]
     assert_equal "Visa", resp.authorization["accountType"]
+
+    # Verify profile and payment profiles defined
+    resp = gateway.get_profile({profile_id: profile_id})
+    assert resp.success?
+    assert_equal profile_id, resp["profile"]["customerProfileId"]
+    assert_equal "XXXX1111", resp["profile"]["paymentProfiles"]["payment"]["creditCard"]["cardNumber"]
+    assert_equal "Quentin", resp["profile"]["paymentProfiles"]["billTo"]["firstName"]
+    assert_equal "Tarantino", resp["profile"]["paymentProfiles"]["billTo"]["lastName"]
+    assert_equal "#12345 Foobar street", resp["profile"]["paymentProfiles"]["billTo"]["address"]
+    assert_equal "90210", resp["profile"]["paymentProfiles"]["billTo"]["zip"]
   end
 end
