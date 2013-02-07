@@ -46,6 +46,10 @@ class AN
     call("createCustomerProfileTransactionRequest", params)
   end
 
+  def get_profile(params)
+    call("getCustomerProfileRequest", params)
+  end
+
 private
   def call(api_call, params)
     Response.new(post(payload(api_call, params)))
