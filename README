@@ -25,7 +25,7 @@ USAGE
       invoice_number: SecureRandom.hex(10)
     )
 
-    if resp.success?
+    if response.success?
       # process the order, possibly storing
       # parts of resp.to_hash
     else
